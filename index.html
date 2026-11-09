@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MYOU FK</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script><script src="defaults.js"></script></head>
+<body><header><b>🐯 MYOU FK</b><nav><a class="btn g" href="admin.html">Панель капитана</a></nav></header><main id="app">Загрузка…</main>
+<script>
+var sb=supabase.createClient(SB_URL,SB_KEY);
+loadAll(sb).then(function(d){
+ var P=d.P,R=d.R,m=nextMatch(d.M),h='';
+ if(m){
+  h+='<div class="box match"><div><div class="logo" style="font-size:30px">🐯</div><br><b>MYOU FK</b></div><div><div class="vs">VS</div><div class="mut">'+(m.date?new Date(m.date).toLocaleString('ru',{dateStyle:'long',timeStyle:'short'}):'')+'</div></div>'+
+  '<div>'+(m.logo?'<img class="logo" src="'+esc(m.logo)+'">':'<div class="logo"></div>')+'<br><b>'+esc(m.opponent)+'</b></div></div>'+
+  '<h2>Состав · '+esc(m.formation)+'</h2><div class="box">'+pitch(m,P)+'</div>'+
+  '<h2>Замены</h2><div class="box">'+((m.subs||[]).length?'<table><tr><th>Игрок</th><th>Когда выйдет</th><th>В каких случаях</th><th>Сколько играет</th></tr>'+m.subs.map(function(s){var p=pn(P,s.pid);return '<tr><td><b>'+esc(p?p.name:'—')+'</b></td><td>'+esc(s.when)+'</td><td>'+esc(s.case)+'</td><td>'+esc(s.dur)+'</td></tr>'}).join('')+'</table>':'<span class="mut">Пока не заданы</span>')+'</div>'+
+  '<h2>Тактика</h2><div class="box">'+((m.tactics||[]).length?m.tactics.map(function(t){return '<div class="row"><span class="tag">'+esc(t.when)+'</span> '+esc(t.what)+'</div>'}).join(''):'<span class="mut">Пока не задана</span>')+'</div>';
+ }else h+='<div class="box mut">Следующий матч пока не назначен.</div>';
+ h+='<h2>Карточки игроков</h2><div class="grid">'+(P.map(function(p){return cardHTML(p,R)}).join('')||'<span class="mut">Игроков пока нет</span>')+'</div>';
+ document.getElementById('app').innerHTML=h;
+});
+</script></body></html>
